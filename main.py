@@ -1,68 +1,39 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session
-from sqlalchemy import create_engine, ForeignKey
-from typing import List
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, ForeignKey, Engine
+
+# * Custom imports
+from app.models import Base, User, VaultItem
+from app.utils.logger import __configure_SQLA_logging, get_logger
+from app.utils.paths import get_db_filepath
+
+from app.ui.compiled.register import Ui_MainWindow as RegisterWindow
+from app.ui.compiled.login import Ui_MainWindow as LoginWindow
 
 
-class Base(DeclarativeBase):
-    pass
 
-class User(Base):
-    __tablename__ = "user"
-    user_id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str]
-    addresses: Mapped[List["Address"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
-    )
+def main():
+    # Configure logging    
+    __configure_SQLA_logging("app.log")
+    app_logger = get_logger(__name__)
 
-    def __repr__(self):
-        return f"<User id={self.user_id!r}, name={self.name!r}>"
+    app_logger.info("App starting...")
+    # Configure database
 
-class Address(Base):
-    __tablename__ = "address"
-    address_id: Mapped[int] = mapped_column(primary_key=True)
-    email_address: Mapped[str]
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.user_id"))
+    db_file = get_db_filepath("test.db")
+    engine = create_engine(f"sqlite:///{db_file}", echo=False)
+    # Create database (if not already)
+    Base.metadata.create_all(engine)
+    app_logger.info(f"Database created")
 
-    user: Mapped["User"] = relationship(back_populates="addresses")
+    # Actual session
+    test_session(engine)
 
-    def __repr__(self):
-        return f"<Address id={self.address_id!r}, email={self.email_address!r}, user={self.user!r}>"
+# TODO: Integrate with QT
+def test_session(engine:Engine):
 
-
-engine = create_engine("sqlite:///app/tests/test.db", echo=True)
-Base.metadata.create_all(engine)
+    with Session(engine) as session:
+        pass
 
 
 if __name__ == "__main__":
-    with Session(engine) as session:
-        while True:
-            option = input("1.Create User\n2.See all users\n3. Update user\n4. Delete user\n5. See all address \n6.Exit\n").strip()
-            match option:
-                case '1':
-                    username = input("Enter name: ")
-                    address = input("Enter email address: ")
-                    new_user = User(name=username, 
-                            addresses=[Address(email_address=address)]
-                        )
-                    # ? How do I add a the new user to the db?
-                    session.add(new_user)
-                    session.commit()
-                case '2':
-                    users = session.query(User).all()
-                    for user in users:
-                        print(user)
-                case '3':
-                    pass
-                case '4':
-                    pass
-                case '5':
-                    addresses = session.query(Address).all()
-                    for address in addresses:
-                        print(address)
-                case '6':
-                    break
-                case _:
-                    print("Invalid option")
-                    continue
-
-            input("---- Continue --- ")
+    main()

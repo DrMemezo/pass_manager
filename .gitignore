@@ -1,8 +1,12 @@
 .venv/
 .vscode/
-ui/
 __pycache__/
+
+
+*.ui
 logs/
+tests/
+
 alembic.ini
 alembic/
 *.db

@@ -28,8 +28,3 @@ def __configure_SQLA_logging(filename:str):
 
 def get_logger(name:str|None=None) -> logging.Logger:
     return logging.getLogger(name)
-
-if __name__ == "__main__":
-    __configure_SQLA_logging("test.log")
-    this_logger:logging.Logger = get_logger()
-    this_logger.log(logging.DEBUG, "Hello, logger.")
