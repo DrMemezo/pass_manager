@@ -2,7 +2,7 @@ import logging
 from app.utils.paths import get_log_filepath
 
 
-def __configure_SQLA_logging(filename:str):
+def _configure_SQLA_logging(filename:str):
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 

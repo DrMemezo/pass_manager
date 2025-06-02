@@ -1,39 +1,35 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import create_engine, ForeignKey, Engine
+from PyQt6.QtWidgets import QApplication
+import sys
 
 # * Custom imports
-from app.models import Base, User, VaultItem
-from app.utils.logger import __configure_SQLA_logging, get_logger
+from app.models import Base, User, VaultItem, DBManager
 from app.utils.paths import get_db_filepath
 
-from app.ui.compiled.register import Ui_MainWindow as RegisterWindow
-from app.ui.compiled.login import Ui_MainWindow as LoginWindow
-
-
+from app.tests.testqt import AppController
 
 def main():
-    # Configure logging    
-    __configure_SQLA_logging("app.log")
-    app_logger = get_logger(__name__)
+    
+    db_man = DBManager(get_db_filepath("test.db"))
 
-    app_logger.info("App starting...")
-    # Configure database
+    db_man.logger.info("App starting...")
+    db_man.logger.info(f"Database created")
 
-    db_file = get_db_filepath("test.db")
-    engine = create_engine(f"sqlite:///{db_file}", echo=False)
-    # Create database (if not already)
-    Base.metadata.create_all(engine)
-    app_logger.info(f"Database created")
+    app = QApplication(sys.argv)
+    controller = AppController()
+    controller.run()
 
     # Actual session
-    test_session(engine)
+    test_session(db_man) 
+
+    sys.exit(app.exec())
 
 # TODO: Integrate with QT
-def test_session(engine:Engine):
+def test_session(db_man:DBManager):
 
-    with Session(engine) as session:
-        pass
+    session = db_man.get_session()
+    result = session.query(User).all()
 
+    print(result)
 
 if __name__ == "__main__":
     main()

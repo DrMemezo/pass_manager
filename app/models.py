@@ -1,6 +1,9 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker
+from sqlalchemy import ForeignKey, create_engine
 from typing import List, Optional
+from pathlib import Path
+
+from app.utils.logger import _configure_SQLA_logging, get_logger
 
 class Base(DeclarativeBase):
     pass
@@ -39,3 +42,20 @@ class VaultItemURL(Base):
     item_id: Mapped[int] = mapped_column(ForeignKey("vaultitems.item_id"))
 
     vault_item: Mapped[VaultItem] = relationship(back_populates="urls")
+
+class DBManager:
+    def __init__(self, uri:Path, log_file:Optional[str]=None):
+
+        # Configure logging
+        _configure_SQLA_logging(log_file if log_file else "app.log")
+        self.logger = get_logger(__name__)
+
+        # Configure engine
+        self.engine = create_engine(f"sqlite:///{uri}", echo=False)
+        self.SessionLocal = sessionmaker(bind=self.engine) 
+
+    def get_session(self) -> Session:
+        return self.SessionLocal()
+    
+    def create_tables(self):
+        Base.metadata.create_all(self.engine)
