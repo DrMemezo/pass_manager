@@ -10,3 +10,5 @@ tests/
 alembic.ini
 alembic/
 *.db
+
+TODO.md

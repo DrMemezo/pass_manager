@@ -36,6 +36,12 @@ class Ui_MainWindow(object):
 "QPushButton:hover {\n"
 "    background-color: #555;\n"
 "}\n"
+"\n"
+"#infoLabel {\n"
+"    background-color:rgb(255, 3, 3);\n"
+"    padding: 5px;\n"
+"     border-radius: 25px;\n"
+"}\n"
 "")
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -74,6 +80,14 @@ class Ui_MainWindow(object):
         self.registerButton = QtWidgets.QPushButton(parent=self.centralwidget)
         self.registerButton.setGeometry(QtCore.QRect(160, 280, 71, 31))
         self.registerButton.setObjectName("registerButton")
+        self.infoLabel = QtWidgets.QLabel(parent=self.centralwidget)
+        self.infoLabel.setEnabled(True)
+        self.infoLabel.setGeometry(QtCore.QRect(150, 20, 91, 31))
+        self.infoLabel.setStyleSheet("")
+        self.infoLabel.setObjectName("infoLabel")
+        self.switchToLoginButton = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.switchToLoginButton.setGeometry(QtCore.QRect(310, 270, 101, 41))
+        self.switchToLoginButton.setObjectName("switchToLoginButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -89,3 +103,5 @@ class Ui_MainWindow(object):
         self.passwordLabel.setText(_translate("MainWindow", "Password:"))
         self.renterPasswordLabel.setText(_translate("MainWindow", "Enter Password Again:"))
         self.registerButton.setText(_translate("MainWindow", "Register"))
+        self.infoLabel.setText(_translate("MainWindow", "placeholder"))
+        self.switchToLoginButton.setText(_translate("MainWindow", "Go to Login"))

@@ -47,7 +47,9 @@ class DBManager:
     def __init__(self, uri:Path, log_file:Optional[str]=None):
 
         # Configure logging
-        _configure_SQLA_logging(log_file if log_file else "app.log")
+        if log_file:
+            _configure_SQLA_logging(log_file) 
+        
         self.logger = get_logger(__name__)
 
         # Configure engine
