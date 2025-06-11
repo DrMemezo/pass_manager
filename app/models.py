@@ -1,9 +1,10 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker
-from sqlalchemy import ForeignKey, create_engine
+from sqlalchemy import ForeignKey, create_engine, LargeBinary
 from typing import List, Optional
 from pathlib import Path
 
 from app.utils.logger import _configure_SQLA_logging, get_logger
+from app.utils.paths import get_db_filepath
 
 class Base(DeclarativeBase):
     pass
@@ -12,7 +13,8 @@ class User(Base):
     __tablename__ = "users"
     user_id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True)
-    master_hash: Mapped[str] # * Hashed 
+    master_hash: Mapped[str] # * Hashed
+    salt: Mapped[bytes] = mapped_column(LargeBinary(16), nullable=False)
 
     vault_items: Mapped[List["VaultItem"]] = relationship(
         back_populates="owner", cascade="all, delete-orphan"
@@ -44,8 +46,9 @@ class VaultItemURL(Base):
     vault_item: Mapped[VaultItem] = relationship(back_populates="urls")
 
 class DBManager:
-    def __init__(self, uri:Path, log_file:Optional[str]=None):
+    def __init__(self, uri:str, log_file:Optional[str]=None):
 
+        
         # Configure logging
         if log_file:
             _configure_SQLA_logging(log_file) 
@@ -53,11 +56,23 @@ class DBManager:
         self.logger = get_logger(__name__)
 
         # Configure engine
-        self.engine = create_engine(f"sqlite:///{uri}", echo=False)
+        uri_path = get_db_filepath(uri)
+
+        self.engine = create_engine(f"sqlite:///{uri_path}", echo=False)
         self.SessionLocal = sessionmaker(bind=self.engine) 
+
+        # Create the tables(if not already)
+        self.create_tables()
+
 
     def get_session(self) -> Session:
         return self.SessionLocal()
     
     def create_tables(self):
         Base.metadata.create_all(self.engine)
+    
+    def get_hash(self, username:str) -> Optional[str]:
+        """Returns the hash of user by their name if it exists"""
+        
+
+        return None

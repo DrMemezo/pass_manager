@@ -1,7 +1,6 @@
 import logging
 from app.utils.paths import get_log_filepath
 
-
 def _configure_SQLA_logging(filename:str):
     
     logger = logging.getLogger()

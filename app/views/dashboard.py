@@ -9,7 +9,7 @@ class DashboardView(QMainWindow):
 
         self.ui = DashboardUI()
         self.ui.setupUi(self)
-        self.ui.UsernameLabel.setText("<h2>lalalala</h2>")
+        self.ui.UsernameLabel.setText("<h2>Placeholder</h2>")
     
-    def setUsernameLabel(self, text:str):
+    def set_UsernameLabel(self, text:str):
         self.ui.UsernameLabel.setText(f"<h2>{text}</h2>")

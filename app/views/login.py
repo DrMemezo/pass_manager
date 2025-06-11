@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtCore import pyqtSignal
-from typing import Callable
 
 from app.ui.compiled.login import Ui_MainWindow as LoginUI
 

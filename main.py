@@ -1,35 +1,25 @@
 from PyQt6.QtWidgets import QApplication
 import sys
 
-# * Custom imports
-from app.models import Base, User, VaultItem, DBManager
-from app.utils.paths import get_db_filepath
-
-from app.tests.testqt import AppController
+from app.views.app_controller import AppController
+from app.models import DBManager
+from app.utils.crypto_manager import CryptographyManager
 
 def main():
+    DEBUG_MODE = "--debug" in sys.argv
+
+    if DEBUG_MODE:
+        print("SQL_ALCHEMY Logging is enabled")
+
+    app = QApplication(sys.argv) 
+    controller = AppController(
+        DBManager("test.db", "app.log" if DEBUG_MODE else None),
+        CryptographyManager()
+        )
     
-    db_man = DBManager(get_db_filepath("test.db"))
-
-    db_man.logger.info("App starting...")
-    db_man.logger.info(f"Database created")
-
-    app = QApplication(sys.argv)
-    controller = AppController()
     controller.run()
 
-    # Actual session
-    test_session(db_man) 
-
     sys.exit(app.exec())
-
-# TODO: Integrate with QT
-def test_session(db_man:DBManager):
-
-    session = db_man.get_session()
-    result = session.query(User).all()
-
-    print(result)
 
 if __name__ == "__main__":
     main()
