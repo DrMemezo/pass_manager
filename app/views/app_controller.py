@@ -6,7 +6,7 @@ from app.views.register import RegisterView
 
 from app.models import DBManager, User
 
-from app.utils.logger import get_logger
+from app.utils.logger import configure_logger, configure_SQLA_logging
 from app.utils.crypto_manager import CryptographyManager
 import os
 from functools import partial
@@ -25,19 +25,25 @@ class AppController(QMainWindow):
         self.setCentralWidget(self.stack)
 
         # Set logger:
-        self.logger = get_logger("Controller")
+        self.logger = configure_logger("app")
+        configure_SQLA_logging()        
 
         # Define Views
         self.login_view = LoginView()
         self.register_view = RegisterView()
         self.dashboard_view = DashboardView()
 
-        # Connect signals to slots
+        # * Connect signals to slots
         self.register_view.register_required.connect(self.handle_register) 
         self.register_view.switch_to_login.connect(partial(self.switch_to, self.login_view))
 
         self.login_view.login_required.connect(self.handle_login) 
         self.login_view.switch_to_register.connect(partial(self.switch_to, self.register_view))
+
+        self.dashboard_view.logout_required.connect(self.handle_logout)
+        self.dashboard_view.vi_added.connect(self.handle_vi_entry)
+
+        # * --------
 
         # Add all views to the stack
         self.stack.addWidget(self.login_view)
@@ -63,6 +69,12 @@ class AppController(QMainWindow):
         
         self.switch_to(self.dashboard_view)
         self.dashboard_view.set_UsernameLabel(username)
+        
+        # TODO: SHOW ALL OF THE USER ITEMS ON LOGIN 
+
+    def handle_logout(self):
+        self.crypto_manager.clear()
+        self.switch_to(self.login_view)
 
     def set_info_label(self, msg:str):
         """Sets the infoLabel widget for the current view"""
@@ -116,6 +128,30 @@ class AppController(QMainWindow):
         self.set_info_label("You are sucessfully registered! Please login")
         password = None
         del password
+
+    def handle_vi_entry(self, data:dict[str]):
+        """ Validates user data, and adds them to the database if valid """
+        
+        # TODO: ADD FEEDBACK FOR FORM DIALOG
+        password = data['password']
+        username = data['username']
+        url = data['URL']
+        
+        # Validate data
+        if len(password) < 5:
+            print("Password is too weak")
+            return
+        
+        if not username:
+            print("Username field must not be empty")
+            return
+
+        if not url:
+            print("URL field must not be empty")
+            return
+
+        # Add data to database
+        print("Data added to databse! (not rlly)")
 
     def run(self):
         self.show()

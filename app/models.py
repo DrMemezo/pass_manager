@@ -1,9 +1,7 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker
 from sqlalchemy import ForeignKey, create_engine, LargeBinary
 from typing import List, Optional
-from pathlib import Path
 
-from app.utils.logger import _configure_SQLA_logging, get_logger
 from app.utils.paths import get_db_filepath
 
 class Base(DeclarativeBase):
@@ -46,14 +44,7 @@ class VaultItemURL(Base):
     vault_item: Mapped[VaultItem] = relationship(back_populates="urls")
 
 class DBManager:
-    def __init__(self, uri:str, log_file:Optional[str]=None):
-
-        
-        # Configure logging
-        if log_file:
-            _configure_SQLA_logging(log_file) 
-        
-        self.logger = get_logger(__name__)
+    def __init__(self, uri:str):
 
         # Configure engine
         uri_path = get_db_filepath(uri)
@@ -70,9 +61,3 @@ class DBManager:
     
     def create_tables(self):
         Base.metadata.create_all(self.engine)
-    
-    def get_hash(self, username:str) -> Optional[str]:
-        """Returns the hash of user by their name if it exists"""
-        
-
-        return None

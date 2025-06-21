@@ -3,7 +3,6 @@
 __pycache__/
 
 
-*.ui
 logs/
 tests/
 

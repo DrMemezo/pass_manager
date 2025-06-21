@@ -6,7 +6,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.backends import default_backend # ? TO CLAUDE: What is a backend as used in cryptography?
 
-import os
 import base64
 from typing import Optional
 
@@ -48,7 +47,11 @@ class CryptographyManager:
         key = None 
         del key 
 
-
+    def encrypt_password(self, plain:str) -> bytes:
+        return self.__fernet.encrypt(plain.encode())
+    
+    def decrypt_passwrd(self, cipher:str) -> str:
+        return self.__fernet.decrypt(cipher).decode()
 
     def clear(self):
         """ Clears the class of the user's data """
