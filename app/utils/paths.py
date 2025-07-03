@@ -7,6 +7,7 @@ WORKSPACE_FOLDER = APP_FOLDER.parent
 LOGS_FOLDER = WORKSPACE_FOLDER / "logs"
 # TODO: After completing the business logic, change from storing locally to storing in the User-specific folder
 DB_FOLDER = APP_FOLDER / "tests" 
+ICONS_FOLDER = APP_FOLDER / "ui" / "icons"
 
 def get_log_filepath(filename:str) -> Path:
     LOGS_FOLDER.mkdir(exist_ok=True)

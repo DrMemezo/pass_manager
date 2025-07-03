@@ -5,7 +5,8 @@ from app.views.app_controller import AppController
 from app.models import DBManager
 from app.utils.crypto_manager import CryptographyManager
 
-def main():
+def main():   
+    
     app = QApplication(sys.argv) 
     controller = AppController(
         DBManager("test.db"),

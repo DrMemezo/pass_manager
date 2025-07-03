@@ -1,11 +1,10 @@
-from PyQt6.QtWidgets import QMainWindow, QHeaderView, QDialog, QTableWidgetItem, QComboBox
+from PyQt6.QtWidgets import QMainWindow, QHeaderView, QDialog, QTableWidgetItem, QComboBox, QPushButton
 from PyQt6.QtCore import pyqtSignal
 from typing import Optional
 
 
 from app.ui.compiled.dashboard import Ui_MainWindow as DashboardUI
 from app.ui.compiled.dialog import Ui_Dialog as DialogUI
-
 
 
 class FormDialog(QDialog):
@@ -17,22 +16,47 @@ class FormDialog(QDialog):
         self.remove_placeholders()
 
         self.ui.saveButton.clicked.connect(self.accept)
+        self.ui.addURLButton.clicked.connect(self.on_URL_added)
+        self.ui.removeURLButton.clicked.connect(self.on_URL_removed)
         # Reject is called if the user exits via the 'X".
 
+    def get_URLListWidget_items(self) -> list[str]:
+        self.ui.URLListWidget.items
+        items_list = [self.ui.URLListWidget.item(i).text() for i in range(self.ui.URLListWidget.count())]
+        return items_list 
 
-    def get_form_data(self) -> dict[str, str]:
+    def get_form_data(self) -> dict[str, str|list[str]]:
         """Returns the inputs from the modal form at the time of function being called"""
         return {
             "password": self.ui.passwordInput.text(),
             "username": self.ui.usernameInput.text(),
-            "URL": self.ui.URLInput.text()
+            "URL": self.get_URLListWidget_items()
         }
     
+    def on_URL_removed(self):
+        selected = self.ui.URLListWidget.selectedItems()
+        for item in selected:
+            self.ui.URLListWidget.takeItem(self.ui.URLListWidget.row(item))
+
+    def on_URL_added(self):
+        """Appends the URL to the URLListWidget"""
+        url = self.ui.URLInput.text().strip()
+        self.ui.URLInput.clear()
+
+        if not url:
+            print("DASHBOARD: URL feild must not be empty")
+            return
+
+        if url in self.get_URLListWidget_items():
+            print("DASHBOARD: Each URL must be unique!")        
+            return
+
+        self.ui.URLListWidget.addItem(url)
+
     def clear_all(self):
         self.ui.passwordInput.clear()
         self.ui.usernameInput.clear()
         self.ui.URLInput.clear()
-
 
     def remove_placeholders(self):
         self.ui.passwordLabel.setText("Enter Password")
@@ -52,7 +76,7 @@ class DashboardView(QMainWindow):
         self.ui.setupUi(self)
 
         # * CONFIGURING TABLES
-        self.ui.VaultTable.setHorizontalHeaderLabels(["ID","Password","URL","Username","Edit"])
+        self.ui.VaultTable.setHorizontalHeaderLabels(["ID","Password","URL","Username"])
         self.ui.VaultTable.setColumnHidden(0, True)
 
         self.ui.VaultTable.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)        
@@ -91,10 +115,20 @@ class DashboardView(QMainWindow):
         self.ui.VaultTable.setItem(row_position, 1, password_item)
 
         # * Col 2 URLs
-        url_combo = QComboBox(self) # ? What would be the appropriate parent for this widget?
+        url_combo = QComboBox(self.ui.VaultTable) 
         for url in urls:
             url_combo.addItem(url)
         self.ui.VaultTable.setCellWidget(row_position, 2, url_combo)
+
+        # * Col 3 Username
+        username_item = QTableWidgetItem(username if username else '')
+        self.ui.VaultTable.setItem(row_position, 3, username_item)
+
+        # # * Col 4 Edit
+        # edit_button = QPushButton() 
+        # icon = QIcon(ICONS_FOLDER / "pen-solid.svg")
+        # edit_button.setIcon(icon)
+        # self.ui.VaultTable.setCellWidget(row_position, 4, edit_button)
 
     def on_add(self): 
         dialog = self.setupDialog()
@@ -102,14 +136,16 @@ class DashboardView(QMainWindow):
         dialog.setWindowTitle("Add new entry")
         dialog.ui.optionLabel.setText("Add new password")
 
-
         if dialog.exec():
             data = dialog.get_form_data()
             self.vi_added.emit(data) 
         # else:
         #     print("User closed....")
+    
+    def clear_table(self):
+        """Clears VaultTable completely"""
 
-
+        self.ui.VaultTable.setRowCount(0)
 
 
     def setupDialog(self) -> FormDialog:

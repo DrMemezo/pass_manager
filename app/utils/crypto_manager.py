@@ -50,7 +50,7 @@ class CryptographyManager:
     def encrypt_password(self, plain:str) -> bytes:
         return self.__fernet.encrypt(plain.encode())
     
-    def decrypt_passwrd(self, cipher:str) -> str:
+    def decrypt_password(self, cipher:str) -> str:
         return self.__fernet.decrypt(cipher).decode()
 
     def clear(self):

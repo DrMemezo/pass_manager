@@ -110,9 +110,8 @@ QToolButton {
         <bool>true</bool>
        </property>
        <property name="columnCount">
-        <number>5</number>
+        <number>4</number>
        </property>
-       <column/>
        <column/>
        <column/>
        <column/>

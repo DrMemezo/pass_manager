@@ -12,7 +12,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(557, 139)
+        Dialog.resize(557, 241)
         Dialog.setStyleSheet("QWidget {\n"
 "    background-color: #2b2b2b;\n"
 "    color: #f0f0f0;\n"
@@ -50,7 +50,7 @@ class Ui_Dialog(object):
 "    border-radius: 15px;\n"
 "}")
         self.verticalLayoutWidget_3 = QtWidgets.QWidget(parent=Dialog)
-        self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(390, 40, 177, 80))
+        self.verticalLayoutWidget_3.setGeometry(QtCore.QRect(20, 140, 211, 80))
         self.verticalLayoutWidget_3.setObjectName("verticalLayoutWidget_3")
         self.URLVerticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_3)
         self.URLVerticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -62,7 +62,7 @@ class Ui_Dialog(object):
         self.URLInput.setObjectName("URLInput")
         self.URLVerticalLayout.addWidget(self.URLInput)
         self.verticalLayoutWidget = QtWidgets.QWidget(parent=Dialog)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 40, 173, 80))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 40, 251, 80))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.passwordVerticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.passwordVerticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -74,7 +74,7 @@ class Ui_Dialog(object):
         self.passwordInput.setObjectName("passwordInput")
         self.passwordVerticalLayout.addWidget(self.passwordInput)
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(parent=Dialog)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(200, 40, 177, 80))
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(276, 40, 271, 80))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
         self.usernameVerticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
         self.usernameVerticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -99,6 +99,29 @@ class Ui_Dialog(object):
         icon.addPixmap(QtGui.QPixmap("app/ui\\icons/floppy-disk-solid.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.saveButton.setIcon(icon)
         self.saveButton.setObjectName("saveButton")
+        self.URLListWidget = QtWidgets.QListWidget(parent=Dialog)
+        self.URLListWidget.setGeometry(QtCore.QRect(280, 140, 251, 81))
+        self.URLListWidget.setObjectName("URLListWidget")
+        self.addURLButton = QtWidgets.QToolButton(parent=Dialog)
+        self.addURLButton.setGeometry(QtCore.QRect(240, 140, 31, 31))
+        self.addURLButton.setStyleSheet("QToolButton {\n"
+"    \n"
+"    background-color: rgb(139, 139, 139);\n"
+"}")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap("app/ui\\icons/plus-solid.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.addURLButton.setIcon(icon1)
+        self.addURLButton.setObjectName("addURLButton")
+        self.removeURLButton = QtWidgets.QToolButton(parent=Dialog)
+        self.removeURLButton.setGeometry(QtCore.QRect(240, 190, 31, 31))
+        self.removeURLButton.setStyleSheet("QToolButton {\n"
+"    \n"
+"    background-color: rgb(139, 139, 139);\n"
+"}")
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(QtGui.QPixmap("app/ui\\icons/minus-solid.svg"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        self.removeURLButton.setIcon(icon2)
+        self.removeURLButton.setObjectName("removeURLButton")
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -114,3 +137,5 @@ class Ui_Dialog(object):
         self.usernameInput.setText(_translate("Dialog", "username_input_placeholder"))
         self.optionLabel.setText(_translate("Dialog", "Placeholder"))
         self.saveButton.setText(_translate("Dialog", "..."))
+        self.addURLButton.setText(_translate("Dialog", "..."))
+        self.removeURLButton.setText(_translate("Dialog", "..."))

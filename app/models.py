@@ -1,4 +1,4 @@
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, Session, sessionmaker, joinedload
 from sqlalchemy import ForeignKey, create_engine, LargeBinary
 from typing import List, Optional
 
@@ -61,3 +61,12 @@ class DBManager:
     
     def create_tables(self):
         Base.metadata.create_all(self.engine)
+    
+    def get_user(self, username:str, session:Session) -> Optional[User]:
+        """ Validates the username and password. Returns the user object if valid, else returns None"""
+        user = (session.query(User)
+                .options(joinedload(User.vault_items).joinedload(VaultItem.urls))
+                .filter_by(name=username).
+                first()
+            ) 
+        return user

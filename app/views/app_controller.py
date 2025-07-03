@@ -4,12 +4,14 @@ from app.views.dashboard import DashboardView
 from app.views.login import LoginView
 from app.views.register import RegisterView
 
-from app.models import DBManager, User
+from app.models import DBManager, User, VaultItem, VaultItemURL
 
 from app.utils.logger import configure_logger, configure_SQLA_logging
 from app.utils.crypto_manager import CryptographyManager
+
 import os
 from functools import partial
+from typing import Optional
 
 class AppController(QMainWindow):
     def __init__(self, db_manager:DBManager, crp_manager:CryptographyManager):
@@ -17,6 +19,7 @@ class AppController(QMainWindow):
 
         self.db_manager = db_manager
         self.crypto_manager = crp_manager
+        self.current_user:Optional[User] = None
 
         self.setWindowTitle("Password Manager")
         self.resize(420, 340)
@@ -58,12 +61,15 @@ class AppController(QMainWindow):
         password = self.login_view.get_password()
 
         with self.db_manager.get_session() as session: 
-            user = session.query(User).filter_by(name=username).first()
+            user = self.db_manager.get_user(username, session)
             
             if not user or not self.crypto_manager.verify(password, user.master_hash):
                 self.set_info_label("Incorrect username or password")
                 return
             
+            self.current_user = user
+            self.crypto_manager.set_fernet(password, user.salt)
+
             password = None
             del password
         
@@ -71,10 +77,17 @@ class AppController(QMainWindow):
         self.dashboard_view.set_UsernameLabel(username)
         
         # TODO: SHOW ALL OF THE USER ITEMS ON LOGIN 
+        for vi in user.vault_items:
+            self.dashboard_view.show_item(id=vi.item_id, 
+                                        password=self.crypto_manager.decrypt_password(vi.encrypted_item),
+                                        urls=[url.url for url in vi.urls],  
+                                        username=vi.username)
 
     def handle_logout(self):
         self.crypto_manager.clear()
+        self.current_user = None
         self.switch_to(self.login_view)
+        self.dashboard_view.clear_table()
 
     def set_info_label(self, msg:str):
         """Sets the infoLabel widget for the current view"""
@@ -133,25 +146,40 @@ class AppController(QMainWindow):
         """ Validates user data, and adds them to the database if valid """
         
         # TODO: ADD FEEDBACK FOR FORM DIALOG
-        password = data['password']
-        username = data['username']
-        url = data['URL']
+        password:str = data['password']
+        username:str = data['username']
+        urls:list[str] = data['URL']
         
         # Validate data
         if len(password) < 5:
             print("Password is too weak")
             return
         
+
+        if not urls:
+            print("a URL must be given")
+            return
+        
         if not username:
-            print("Username field must not be empty")
-            return
+            print(" WARNING: Username field is empty")
 
-        if not url:
-            print("URL field must not be empty")
-            return
+        with self.db_manager.get_session() as session:
+            ciphertext = self.crypto_manager.encrypt_password(password)
 
-        # Add data to database
-        print("Data added to databse! (not rlly)")
+            new_vi = VaultItem(encrypted_item=ciphertext, 
+                               username=username, 
+                               user_id=self.current_user.user_id,
+                               urls=[]
+                            )
+            
+            for url in urls:
+                vi_url = VaultItemURL(url=url, item_id=new_vi.item_id, vault_item=new_vi)
+                new_vi.urls.append(vi_url)
+
+            session.add(new_vi)
+            session.commit()
+            print("DEBUG: Vault_Item added!!!")
+
 
     def run(self):
         self.show()

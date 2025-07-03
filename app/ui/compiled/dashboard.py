@@ -67,7 +67,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.VaultTable = QtWidgets.QTableWidget(parent=self.verticalLayoutWidget)
         self.VaultTable.setAlternatingRowColors(True)
-        self.VaultTable.setColumnCount(5)
+        self.VaultTable.setColumnCount(4)
         self.VaultTable.setObjectName("VaultTable")
         self.VaultTable.setRowCount(0)
         self.verticalLayout.addWidget(self.VaultTable)
